@@ -1,56 +1,70 @@
-# FLARE (Fast Local App Relay & Exchange)
+# Protocol Specification: FLARE (Fast Local App Relay & Exchange)
 
-FLARE is a high-performance, local inter-application communication protocol built on UDP. It aims to provide a fast and secure way for applications to exchange data efficiently within a local environment.
+> Version : 0.0.0-ALPHA
 
-## Features (Planned)
-- TBD
+## 1. Introduction
 
-## Pre-Coding Tasks
-### 📌 Research & Design
-- [ ] Define protocol architecture (message structure, headers, state management).
-- [ ] Decide on TCP/UDP hybrid usage strategy.
-- [ ] Choose an encryption method for secure communication.
-- [ ] Determine authentication and handshake mechanisms.
-- [ ] Identify potential optimizations for low-latency performance.
-- [ ] Create initial API design and function signatures.
+FLARE is a custom UDP-based protocol designed for efficient local inter-application communication. It aims to provide a lightweight, low-latency, and reliable mechanism for data exchange between applications running on the same machine or local network.
 
-### ⚡ Project Setup
-- [ ] Initialize GitHub repository (`FLARE`).
-- [ ] Set up project directory structure.
-- [ ] Define project dependencies (e.g., cryptography, networking libraries).
-- [ ] Configure development environment and CI/CD workflows.
-- [ ] Write an initial contribution guide and code style guidelines.
+## 2. Terminology & Definitions
 
-### 🏗 Core Development
-- [ ] Implement basic socket communication (TCP/UDP binding, listening, sending).
-- [ ] Develop message serialization/deserialization logic.
-- [ ] Implement connection management (sessions, state tracking).
-- [ ] Add encryption layer for secure messaging.
-- [ ] Implement authentication and identity verification.
-- [ ] Design and implement an event-driven system for handling messages.
-- [ ] Optimize performance (buffering, threading, congestion control).
+- **Connection**: A bidirectional communication channel between two endpoints.
+- **Stream**: An independent, ordered sequence of bytes within a connection.
+- **Packet**: A unit of data transmitted over UDP, containing FLARE frames.
+- **Frame**: The smallest unit of data in FLARE, carrying control or application data.
+- **Handshake**: The initial exchange of packets to establish security and session parameters.
+- **Congestion Control**: Mechanism to prevent network congestion by regulating data flow.
 
-### 🔍 Testing & Validation
-- [ ] Write unit tests for core functionalities.
-- [ ] Develop benchmark tests for performance analysis.
-- [ ] Simulate real-world use cases and stress test under load.
-- [ ] Debug networking issues and optimize data transfer efficiency.
+## 3. Protocol Overview
 
-### 📖 Documentation & Examples
-- [ ] Create API documentation.
-- [ ] Write example implementations for different use cases.
-- [ ] Set up a basic tutorial for getting started with FLARE.
-- [ ] Draft security considerations and best practices.
+FLARE provides the following key features:
 
-## Future Enhancements
-- [ ] Implement QUIC-based transport layer for even lower latency.
-- [ ] Add multi-tenant support with user isolation.
-- [ ] Develop monitoring and logging tools for debugging.
-- [ ] Extend protocol to support WebSocket-based communication.
+- **Connection Establishment**: Faster than TCP using a combined transport and cryptographic handshake.
+- **Multiplexed Streams**: Multiple independent streams in a single connection without head-of-line blocking.
+- **Reliable Delivery**: Built-in acknowledgments and retransmission for reliability.
+- **Security**: Uses encryption and authentication mechanisms.
+- **Congestion & Flow Control**: Dynamic adaptation to network conditions.
 
-## Getting Started
-*(To be filled in after initial implementation.)*
+## 4. Packet Structure
 
-## License
-*(Specify license here, e.g., MIT, Apache 2.0, etc.)*
+Refer [here](/src/constants/packet.md)
 
+## 5. State Machine
+
+### 5.1 Connection Establishment
+
+1. **ClientHello** → Client sends an Initial packet with handshake data.
+2. **ServerHello** → Server responds with handshake messages and cryptographic parameters.
+3. **Handshake Completion** → Both parties finalize keys and start encrypted communication.
+
+### 5.2 Data Transfer
+
+1. **STREAM Frame** → Application data sent within streams.
+2. **ACK Frame** → Acknowledgments sent for received packets.
+3. **Retransmission** (if packet loss detected).
+
+### 5.3 Connection Termination
+
+1. **CONNECTION_CLOSE Frame** → Initiates graceful shutdown.
+2. **Final ACK** → Confirms connection closure.
+
+## 6. Error Handling
+
+- **Packet Loss Detection & Retransmission**
+- **Flow & Congestion Control**
+- **Stateless Reset for Unexpected Termination**
+
+## 7. Security Considerations
+
+- **End-to-End Encryption**
+- **Protection Against Replay & Man-in-the-Middle Attacks**
+- **Forward Secrecy & Authentication**
+
+## 8. Implementation Considerations
+
+- Optimize packet scheduling for low latency.
+- Implement adaptive congestion control.
+- Efficient memory management for stream multiplexing.
+
+
+Note : Project still in design state. 
