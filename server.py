@@ -3,7 +3,7 @@ import socket
 
 from src import logger
 
-log = logger.setup_logger("FLAREServer", level=logging.INFO)
+log = logger.setup_logger("FLARE", level=logging.INFO)
 
 
 class FLARE:
