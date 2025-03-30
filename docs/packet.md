@@ -1,4 +1,4 @@
-# QUIC-Like Packet Structure for UDP Transport
+# FLARE Packet Structure
 
 ## Packet Types
 
