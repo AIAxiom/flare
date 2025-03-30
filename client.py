@@ -1,6 +1,8 @@
-import socket
 import logging
+import socket
+
 from src import logger
+from src.constants import CONTROL_PACKET, DATA_PACKET
 from src.packet import *
 
 log = logger.setup_logger("Client", level=logging.INFO)
@@ -12,7 +14,7 @@ def test_control_packet(server_ip: str, server_port: int):
     client_socket.settimeout(2)
 
     control_packet = ControlPacket(control_type=0x01, payload=b"Client Control Message")
-    flare_packet = FlarePacket(version=1, packet_type=ControlPacket.CONTROL_PACKET, conn_id=123, packet_id=1,
+    flare_packet = FlarePacket(version=1, packet_type=CONTROL_PACKET, conn_id=123, packet_id=1,
                                packet_obj=control_packet)
     client_socket.sendto(flare_packet.encode(), (server_ip, server_port))
 
@@ -35,7 +37,7 @@ def test_large_data_transfer(server_ip: str, server_port: int):
     for i in range(0, len(large_payload), chunk_size):
         chunk = large_payload[i:i + chunk_size]
         data_packet = DataPacket(total_length=len(large_payload), chunk_offset=i, payload=chunk)
-        flare_packet = FlarePacket(version=1, packet_type=DataPacket.DATA_PACKET, conn_id=123,
+        flare_packet = FlarePacket(version=1, packet_type=DATA_PACKET, conn_id=123,
                                    packet_id=i // chunk_size, packet_obj=data_packet)
         fragments.append(flare_packet.encode())
 

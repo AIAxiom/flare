@@ -2,6 +2,7 @@ import logging
 import socket
 
 from src import logger
+from src.constants import *
 from src.packet import *
 
 log = logger.setup_logger("FLAREServer", level=logging.INFO)
@@ -26,9 +27,9 @@ class FLARE:
 
             try:
                 packet = FlarePacket.decode(data)
-                if packet.packet_type == ControlPacket.CONTROL_PACKET:
+                if packet.packet_type == CONTROL_PACKET:
                     self.handle_control_packet(packet, addr)
-                elif packet.packet_type == DataPacket.DATA_PACKET:
+                elif packet.packet_type == DATA_PACKET:
                     self.handle_data_packet(packet, addr)
                 else:
                     log.warning("Unknown packet type received.")
@@ -54,14 +55,14 @@ class FLARE:
                 log.info(f"Full Control Packet Reassembled for Connection {conn_id}, Size: {len(full_payload)}")
                 del self.reassembly_buffer[conn_id]  # Clean up buffer
                 response_packet = ControlPacket(control_type=0x02, payload=b"Full Control Packet Received")
-                response_flare = FlarePacket(version=1, packet_type=ControlPacket.CONTROL_PACKET,
+                response_flare = FlarePacket(version=1, packet_type=CONTROL_PACKET,
                                              conn_id=packet.conn_id, packet_id=packet.packet_id,
                                              packet_obj=response_packet)
                 self.socket.sendto(response_flare.encode(), addr)
         else:
             log.info(f"Received Complete Control Packet: {packet.packet_obj.payload}")
             response_packet = ControlPacket(control_type=0x02, payload=b"Server ACK")
-            response_flare = FlarePacket(version=1, packet_type=ControlPacket.CONTROL_PACKET, conn_id=packet.conn_id,
+            response_flare = FlarePacket(version=1, packet_type=CONTROL_PACKET, conn_id=packet.conn_id,
                                          packet_id=packet.packet_id, packet_obj=response_packet)
             self.socket.sendto(response_flare.encode(), addr)
 
@@ -82,7 +83,7 @@ class FLARE:
             log.info(f"Full Data Reassembled for Connection {conn_id}, Size: {len(self.reassembly_buffer[conn_id])}")
             del self.reassembly_buffer[conn_id]  # Clean up buffer
             response_packet = ControlPacket(control_type=0x02, payload=b"Full Data Received")
-            response_flare = FlarePacket(version=1, packet_type=ControlPacket.CONTROL_PACKET, conn_id=packet.conn_id,
+            response_flare = FlarePacket(version=1, packet_type=CONTROL_PACKET, conn_id=packet.conn_id,
                                          packet_id=packet.packet_id, packet_obj=response_packet)
             self.socket.sendto(response_flare.encode(), addr)
 
